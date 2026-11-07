@@ -184,3 +184,13 @@ async def scan_existing_feed_image(payload: dict, authorization: str = Header(de
             complete = False
         items.append({"object_name": name, "quantity": quantity, "price": price, "catalog_options": valid})
     return {**result, "items": items, "estimated_total": totals, "pricing_complete": complete}
+
+
+def _log_baseline_memory():
+    import psutil
+
+    rss_mb = psutil.Process().memory_info().rss / 1024 / 1024
+    print(f"baseline RSS after startup: {rss_mb:.1f} MB", flush=True)
+
+
+_log_baseline_memory()

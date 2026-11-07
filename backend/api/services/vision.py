@@ -1,6 +1,11 @@
 from pathlib import Path
 from PIL import Image
+import torch
 from ultralytics import YOLO
+
+# The deploy target allocates 0.15 CPU, so extra inference threads buy no
+# parallelism and each one carries its own scratch allocation.
+torch.set_num_threads(1)
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
