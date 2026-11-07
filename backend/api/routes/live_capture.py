@@ -1,7 +1,8 @@
 import io
 
-from fastapi import (APIRouter, HTTPException, UploadFile, File)
+from fastapi import (APIRouter, Depends, HTTPException, UploadFile, File)
 from PIL import Image, UnidentifiedImageError
+from api.dependencies.auth import get_current_user
 from api.services.live_capture import (analyze_live_capture)
 
 router = APIRouter()
@@ -10,7 +11,8 @@ router = APIRouter()
 
 @router.post("")
 async def analyze_live_capture_image(
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    user = Depends(get_current_user)
 ):
 
     # 1. VALIDATE FILE TYPE
@@ -35,7 +37,16 @@ async def analyze_live_capture_image(
 
         # 2. READ IMAGE
 
-        contents = await file.read()
+        max_bytes = 10 * 1024 * 1024
+
+        contents = await file.read(max_bytes + 1)
+
+        if len(contents) > max_bytes:
+
+            raise HTTPException(
+                status_code=413,
+                detail="Maximum image size is 10 MB."
+            )
 
         if not contents:
 
@@ -53,6 +64,13 @@ async def analyze_live_capture_image(
             image = Image.open(
                 io.BytesIO(contents)
             )
+
+            if image.width * image.height > 20_000_000:
+
+                raise HTTPException(
+                    status_code=413,
+                    detail="Image dimensions are too large."
+                )
 
             # Make sure the image data is actually loaded
             image.load()

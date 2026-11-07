@@ -1,11 +1,13 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from api.dependencies.auth import get_current_user
 from api.services.scans import analyze_feed_post
 
 router = APIRouter()
 
 @router.post("/analyze")
 async def analyze_feed_image(
-    feed_post_id: str
+    feed_post_id: str,
+    user = Depends(get_current_user)
 ):
 
     try:

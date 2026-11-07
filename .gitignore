@@ -39,3 +39,6 @@ ai/furniture-detection/test-images/
 
 # YOLO generated files
 *.cache
+
+.idea/
+
