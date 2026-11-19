@@ -49,7 +49,7 @@ export function AnalyzeModal({ open, onOpenChange, item }: AnalyzeModalProps) {
           <VisuallyHidden>Analyze Sense — {item.title}</VisuallyHidden>
         </DialogTitle>
 
-        <DialogDescription>
+        <div>
           {/* Step indicator dots */}
           <div className="absolute top-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
             {(["scan", "results"] as Step[]).map((s) => (
@@ -98,7 +98,7 @@ export function AnalyzeModal({ open, onOpenChange, item }: AnalyzeModalProps) {
               )}
             </div>
           </div>
-        </DialogDescription>
+        </div>
       </DialogContent>
     </Dialog>
   );

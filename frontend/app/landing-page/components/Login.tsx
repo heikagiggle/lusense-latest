@@ -101,87 +101,86 @@ const Login = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
           Welcome Back to LuSense
         </DialogTitle>
 
-        <DialogDescription>
-          <Form {...handler}>
-            <form
-              onSubmit={handler.handleSubmit(onSubmit)}
-              className="space-y-3 w-full flex flex-col justify-center p-4"
-            >
-              <FormField
-                control={control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                      {...field}
-                      type="email"
-                      autoComplete="email"
-                      placeholder="Enter your email"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="mt-3">
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                      {...field}
-                      type="password"
-                      autoComplete="current-password"
-                      placeholder="Enter your password"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <p className="text-blue-500">Forgot your password?</p>
-
-              {authError && (
-                <p role="alert" className="text-sm text-red-500">
-                  {authError}
-                </p>
+        <DialogDescription></DialogDescription>
+        <Form {...handler}>
+          <form
+            onSubmit={handler.handleSubmit(onSubmit)}
+            className="space-y-3 w-full flex flex-col justify-center p-4"
+          >
+            <FormField
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    {...field}
+                    type="email"
+                    autoComplete="email"
+                    placeholder="Enter your email"
+                  />
+                  <FormMessage />
+                </FormItem>
               )}
+            />
 
-              <div className="flex gap-x-3">
-                <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? "Logging in..." : "Login"}
-                </Button>
-              </div>
-            </form>
-          </Form>
+            <FormField
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="mt-3">
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    {...field}
+                    type="password"
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <div className="flex flex-col items-center text-center text-secondary-foreground space-y-2">
-            <p className="font-semibold">
-              Don&apos;t have LuSense yet?{" "}
-              <button
-                type="button"
-                className="cursor-pointer underline"
-                onClick={onSwitch}
-              >
-                Sign up
-              </button>
-            </p>
+            <p className="text-blue-500">Forgot your password?</p>
 
-            <p>
-              By continuing, you agree to LuSense&apos;s{" "}
-              <a href="#terms" className="underline">
-                Terms of Service
-              </a>{" "}
-              and acknowledge you&apos;ve read our{" "}
-              <a href="#privacy" className="underline">
-                Privacy Policy
-              </a>
-              .
-            </p>
-          </div>
-        </DialogDescription>
+            {authError && (
+              <p role="alert" className="text-sm text-red-500">
+                {authError}
+              </p>
+            )}
+
+            <div className="flex gap-x-3">
+              <Button type="submit" disabled={loading} className="w-full">
+                {loading ? "Logging in..." : "Login"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+
+        <div className="flex flex-col items-center text-center text-secondary-foreground space-y-2">
+          <p className="font-semibold">
+            Don&apos;t have LuSense yet?{" "}
+            <button
+              type="button"
+              className="cursor-pointer underline"
+              onClick={onSwitch}
+            >
+              Sign up
+            </button>
+          </p>
+
+          <p>
+            By continuing, you agree to LuSense&apos;s{" "}
+            <a href="#terms" className="underline">
+              Terms of Service
+            </a>{" "}
+            and acknowledge you&apos;ve read our{" "}
+            <a href="#privacy" className="underline">
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </div>
       </DialogContent>
     </Dialog>
   );

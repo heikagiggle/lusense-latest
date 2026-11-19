@@ -6,6 +6,8 @@ import numpy as np
 import onnxruntime as ort
 from PIL import Image
 import cv2
+import os
+import psutil
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
@@ -163,10 +165,13 @@ def analyze_image(image: Image.Image):
         preprocess_image(image)
     )
 
+    log_memory("Before inference")
+
     outputs = session.run(
         [output_name],
         {input_name: tensor},
     )
+    log_memory("After inference")
 
     # Model output: (1, 10, 3549)
     # Convert to: (3549, 10)
@@ -248,3 +253,8 @@ def analyze_image(image: Image.Image):
             "height": height,
         },
     }
+
+def log_memory(stage):
+    process = psutil.Process(os.getpid())
+    memory_mb = process.memory_info().rss / (1024 * 1024)
+    print(f"[MEMORY] {stage}: {memory_mb:.2f} MB", flush=True)

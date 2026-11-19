@@ -42,8 +42,10 @@ const Create = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
   const [authError, setAuthError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [pendingEmail, setPendingEmail] = useState("");
 
   const handler = useForm<CreateData>({
     resolver: zodResolver(CreateSchema),
@@ -60,13 +62,16 @@ const Create = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
     setLoading(true);
     setAuthError("");
     setSuccessMessage("");
+    setPendingEmail("");
 
     try {
+      const email = values.email.trim();
+
       const { data, error } = await supabase.auth.signUp({
-        email: values.email.trim(),
+        email,
         password: values.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: window.location.origin,
         },
       });
 
@@ -76,17 +81,19 @@ const Create = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
       }
 
       if (!data.user) {
-        setAuthError("Account creation failed. Please try again.");
+        setAuthError("Unable to process signup. Please try again.");
         return;
       }
 
       if (!data.session) {
+        setPendingEmail(email);
+
         setSuccessMessage(
-          "Please check your email for a confirmation link. After confirming your email, return to LuSense and log in.",
+          "If this email is eligible for registration, you will receive a confirmation link. Please check your inbox and spam folder. If you already have an account, log in instead.",
         );
 
         handler.reset({
-          email: values.email,
+          email,
           password: "",
         });
 
@@ -94,9 +101,10 @@ const Create = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
       }
 
       handler.reset();
+      setPendingEmail("");
       onOpenChange(false);
 
-      router.push("/d");
+      router.replace("/");
       router.refresh();
     } catch (error) {
       console.error("Signup failed:", error);
@@ -106,6 +114,41 @@ const Create = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
       );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const resendConfirmation = async () => {
+    if (!pendingEmail || resending) return;
+
+    setResending(true);
+    setAuthError("");
+    setSuccessMessage("");
+
+    try {
+      const { error } = await supabase.auth.resend({
+        type: "signup",
+        email: pendingEmail,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+
+      if (error) {
+        setAuthError(error.message);
+        return;
+      }
+
+      setSuccessMessage(
+        "If this account is awaiting confirmation and email delivery is available, a new confirmation link will be sent. Please check your inbox and spam folder.",
+      );
+    } catch (error) {
+      console.error("Resend confirmation failed:", error);
+
+      setAuthError(
+        "Unable to resend the confirmation email. Please try again later.",
+      );
+    } finally {
+      setResending(false);
     }
   };
 
@@ -122,96 +165,118 @@ const Create = ({ trigger, open, onOpenChange, onSwitch }: Props) => {
           Welcome to LuSense
         </DialogTitle>
 
-        <DialogDescription>
-          <Form {...handler}>
-            <form
-              onSubmit={handler.handleSubmit(onSubmit)}
-              className="space-y-3 w-full flex flex-col justify-center p-4"
-            >
-              <FormField
-                control={control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                      {...field}
-                      type="email"
-                      autoComplete="email"
-                      placeholder="Enter your email"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+        <DialogDescription></DialogDescription>
+        <Form {...handler}>
+          <form
+            onSubmit={handler.handleSubmit(onSubmit)}
+            className="space-y-3 w-full flex flex-col justify-center p-4"
+          >
+            <FormField
+              control={control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <Input
+                    {...field}
+                    type="email"
+                    autoComplete="email"
+                    placeholder="Enter your email"
+                    disabled={loading || resending}
+                    onChange={(event) => {
+                      field.onChange(event);
+                      setPendingEmail("");
+                      setSuccessMessage("");
+                      setAuthError("");
+                    }}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <FormField
-                control={control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem className="mt-3">
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                      {...field}
-                      type="password"
-                      autoComplete="new-password"
-                      placeholder="Enter your password"
-                    />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <FormItem className="mt-3">
+                  <FormLabel>Password</FormLabel>
+                  <Input
+                    {...field}
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Enter your password"
+                    disabled={loading || resending}
+                  />
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-              <p className="text-muted-foreground">
-                Tip: Use a mix of letters, numbers and symbols for a stronger
-                password.
+            <p className="text-muted-foreground">
+              Tip: Use a mix of letters, numbers and symbols for a stronger
+              password.
+            </p>
+
+            {authError && (
+              <p role="alert" className="text-sm text-red-500">
+                {authError}
               </p>
+            )}
 
-              {authError && (
-                <p role="alert" className="text-sm text-red-500">
-                  {authError}
-                </p>
-              )}
+            {successMessage && (
+              <p role="status" className="text-sm text-green-600">
+                {successMessage}
+              </p>
+            )}
 
-              {successMessage && (
-                <p role="status" className="text-sm text-green-600">
-                  {successMessage}
-                </p>
-              )}
-
-              <div className="mt-2">
-                <Button type="submit" disabled={loading} className="w-full">
-                  {loading ? "Creating account..." : "Create Account"}
-                </Button>
-              </div>
-            </form>
-          </Form>
-
-          <div className="flex flex-col items-center text-center text-secondary-foreground space-y-2">
-            <p className="font-semibold">
-              Already have a LuSense account?{" "}
+            {pendingEmail && (
               <button
                 type="button"
-                onClick={onSwitch}
-                className="cursor-pointer underline"
+                onClick={resendConfirmation}
+                disabled={loading || resending}
+                className="text-sm font-medium text-blue-700 underline disabled:opacity-50"
               >
-                Login
+                {resending ? "Sending..." : "Resend confirmation email"}
               </button>
-            </p>
+            )}
 
-            <p>
-              By continuing, you agree to LuSense&apos;s{" "}
-              <a href="#terms" className="underline">
-                Terms of Service
-              </a>{" "}
-              and acknowledge you&apos;ve read our{" "}
-              <a href="#privacy" className="underline">
-                Privacy Policy
-              </a>
-              .
-            </p>
-          </div>
-        </DialogDescription>
+            <div className="mt-2">
+              <Button
+                type="submit"
+                disabled={loading || resending}
+                className="w-full"
+              >
+                {loading ? "Creating account..." : "Create Account"}
+              </Button>
+            </div>
+          </form>
+        </Form>
+
+        <div className="flex flex-col items-center text-center text-secondary-foreground space-y-2">
+          <p className="font-semibold">
+            Already have a LuSense account?{" "}
+            <button
+              type="button"
+              onClick={onSwitch}
+              className="cursor-pointer underline"
+            >
+              Login
+            </button>
+          </p>
+
+          <p>
+            By continuing, you agree to LuSense&apos;s{" "}
+            <a href="#terms" className="underline">
+              Terms of Service
+            </a>{" "}
+            and acknowledge you&apos;ve read our{" "}
+            <a href="#privacy" className="underline">
+              Privacy Policy
+            </a>
+            .
+          </p>
+        </div>
       </DialogContent>
     </Dialog>
   );
