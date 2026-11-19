@@ -39,3 +39,4 @@ ai/furniture-detection/test-images/
 
 # YOLO generated files
 *.cache
+backend/venv_render_test/
