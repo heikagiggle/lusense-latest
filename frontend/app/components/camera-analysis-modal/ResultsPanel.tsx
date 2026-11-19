@@ -68,11 +68,11 @@ export function ResultsPanel({
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0d0d0d] text-white border-t md:border-t-0 md:border-l border-white/10 shadow-2xl">
-      <div className="shrink-0 px-6 pt-6 md:pt-8 pb-4 md:pb-6 border-b border-white/5 bg-linear-to-b from-white/5 to-transparent">
-        <div className="flex items-start justify-between mb-6">
+    <div className="h-full flex flex-col min-h-0 bg-[#0d0d0d] text-white border-t md:border-t-0 md:border-l border-white/10 shadow-2xl">
+      <div className="shrink-0 px-4 pt-3 pb-3 md:px-6 md:pt-8 md:pb-6 border-b border-white/5 bg-linear-to-b from-white/5 to-transparent">
+        <div className="flex items-start justify-between mb-3 md:mb-6">
           <div>
-            <p className="text-violet-400 text-[10px] font-bold uppercase tracking-[.2em]">Scan Result</p>
+            <p className="text-violet-400 text-[10px] font-bold uppercase tracking-[.2em]">Scan Result | AI-detected furniture · Beta</p>
             <h2 className="md:text-2xl text-xl font-bold tracking-tight">Market Value</h2>
           </div>
           <div className="flex gap-2">
@@ -85,9 +85,20 @@ export function ResultsPanel({
           {priced ? "Estimated typical total · not a verified shop offer" : "Partial estimate · some items have no catalog price"}
         </p>
       </div>
-      <div className="flex-1 overflow-y-auto px-6 py-6 space-y-7 custom-scrollbar">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 md:px-6 md:py-6 space-y-5 md:space-y-7 custom-scrollbar">
         {error && <p role="alert" className="text-red-300 text-sm wrap-break-word">{error}</p>}
-        {scan && <p className="text-white/60 text-xs">{scan.detections.length} object(s) identified by the model. Labels and boxes reflect actual detection results.</p>}
+        {/* {scan && <p className="text-white/60 text-xs">{scan.detections.length} object(s) identified by the model. Labels and boxes reflect actual detection results.</p>} */}
+        {scan && (
+          <div className="space-y-1">
+            <p className="text-white/70 text-xs">
+              {scan.detections.length} furniture object(s) identified.
+            </p>
+            <p className="text-white/40 text-xs leading-relaxed">
+              Beta results may miss or incorrectly identify furniture.
+              Prices are estimates.
+            </p>
+          </div>
+        )}
         {scan && items.length === 0 && <p className="text-white/60 text-sm">No supported furniture detected. Try another angle or better lighting.</p>}
         <section className="space-y-4">
           <p className="text-white/40 text-[11px] font-bold uppercase tracking-wider">Component Breakdown</p>
@@ -148,8 +159,9 @@ export function ResultsPanel({
         )}
         <p className="text-white/30 text-xs">Prices are catalog estimates and may vary by seller, location, and availability. Detection accuracy depends on the trained model and image quality.</p>
       </div>
-      <div className="md:p-6 p-4 border-t border-white/5 bg-black/60 backdrop-blur-xl">
-        <a href={marketUrl} target="_blank" rel="noopener noreferrer" className="w-full md:h-12 h-10 rounded-2xl bg-white text-black hover:bg-zinc-200 active:scale-[0.98] font-bold text-base gap-3 transition-all shadow-xl shadow-white/5 flex items-center justify-center">
+      <div className="shrink-0 border-t border-white/5 bg-[#0d0d0d] px-4 pt-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] md:p-6">
+
+        <a href={marketUrl} target="_blank" rel="noopener noreferrer" className="w-full h-10 md:h-12 rounded-xl md:rounded-2xl bg-white text-black hover:bg-zinc-200 active:scale-[0.98]  font-semibold text-sm md:text-base gap-2 transition-all flex items-center justify-center">
           <MapPin size={18} />
           {optimizedFits ? "Source Optimized Look" : needsAlternatives ? "Explore Markets" : "Shop This Set"}
         </a>

@@ -111,6 +111,17 @@ export function StepScan({
         >
           {loading ? "Scanning…" : error ? "Scan failed" : "Scan complete"}
         </Badge>
+        {result && (
+          <div className="space-y-1 pt-1">
+            <p className="text-xs font-semibold text-violet-600 dark:text-violet-400">
+              AI-detected furniture · Beta
+            </p>
+            <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+              Results are estimates. Some furniture may be missed or incorrectly
+              identified.
+            </p>
+          </div>
+        )}
         <div>
           <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
             {item.title}

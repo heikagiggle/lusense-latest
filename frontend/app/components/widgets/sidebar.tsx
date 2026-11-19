@@ -32,7 +32,7 @@ interface NavItem {
 
 const desktopItems: NavItem[] = [
   { icon: Home, label: "Home", href: "/" },
-  { icon: PlusSquare, label: "Upload", href: "/upload" },
+  { icon: PlusSquare, label: "Upload", href: "#upload" },
   {
     icon: Camera,
     label: "AI Scan",
@@ -40,8 +40,8 @@ const desktopItems: NavItem[] = [
     featured: true,
     action: "camera",
   },
-  { icon: LayoutDashboard, label: "Projects", href: "/projects" },
-  { icon: User, label: "Profile", href: "/profile" },
+  { icon: LayoutDashboard, label: "Projects", href: "#projects" },
+  { icon: User, label: "Profile", href: "#profile" },
 ];
 
 const mobileItems: NavItem[] = [

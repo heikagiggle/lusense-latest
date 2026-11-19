@@ -105,13 +105,13 @@ export function CameraModal({
           "relative z-10 flex overflow-hidden bg-black rounded-xl flex-col md:flex-row transition-all duration-500 w-[90%]",
           showPanel ? "md:w-200" : "md:w-105",
         )}
-        style={{ height: showPanel ? "92dvh" : "88dvh" }}
+        style={{ height:"100dvh", maxHeight:"88dvh",}}
         onClick={(e) => e.stopPropagation()}
       >
         <div
           className={cn(
             "relative overflow-hidden bg-black shrink-0 w-full transition-all duration-500 md:w-105",
-            showPanel ? "h-[42%] md:h-full" : "h-full",
+            showPanel ? "h-[28dvh] max-h-60 md:h-full md:max-h-none" : "h-full",
           )}
         >
           {state === "capture" ? (
@@ -185,7 +185,7 @@ export function CameraModal({
           )}
         </div>
         {showPanel && (
-          <div className="overflow-hidden shrink-0 bg-[#0d0d0d] w-full md:w-95 md:h-full h-1/2">
+          <div className=" flex-1 min-h-0 overflow-hidden bg-[#0d0d0d] w-full md:w-95 md:h-full max-h-none">
             <ResultsPanel
               scan={scan}
               error={error}
